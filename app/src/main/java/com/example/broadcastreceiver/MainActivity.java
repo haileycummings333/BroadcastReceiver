@@ -31,14 +31,14 @@ public class MainActivity extends AppCompatActivity {
 
         tickerListViewModel = new ViewModelProvider(this).get(TickerListViewModel.class);
 
-        //sets up SMS permissions
+
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS)
                 != PackageManager.PERMISSION_GRANTED){
             String[] perms = new String[]{android.Manifest.permission.RECEIVE_SMS};
             ActivityCompat.requestPermissions(this,perms, 101);
         }
     }
-    @Override //will execute code whenever you get new intent (allow work with single task activities)
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         String message = intent.getStringExtra("sms");
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //takes in ticker and checks if it is valid
+
     public boolean isValidTicker(String ticker){
         for (int i = 0; i < ticker.length(); i++){
             if((Character.isLetter(ticker.charAt(i)) == false)) return false;

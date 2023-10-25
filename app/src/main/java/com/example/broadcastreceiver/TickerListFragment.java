@@ -35,7 +35,7 @@ public class TickerListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         tickerListViewModel = new ViewModelProvider(getActivity()).get(TickerListViewModel.class);
-        //observes changes in the listview
+
         Observer<LinkedList<String>> observer = new Observer<LinkedList<String>>() {
             @Override
             public void onChanged(LinkedList<String> strings) {
@@ -53,7 +53,7 @@ public class TickerListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ticker_list, container, false);
-        listview = view.findViewById(R.id.listview_id);
+        listview = view.findViewById(R.id.listView);
         return view;
     }
 
