@@ -1,11 +1,16 @@
 package com.example.broadcastreceiver;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     FragmentManager fg;
@@ -18,38 +23,50 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra("SMS");
 
-        gf = getSupportFragmentManager();
+        fg = getSupportFragmentManager();
         if(savedInstanceState==null){
-            fg.beginTransaction().replace(R.id.topTicker, new TickerList()).commit();
-            fg.beginTransaction().replace(R.id.bottomTicker, new WebViewFragment()).commit();
+            fg.beginTransaction().replace(R.id.topTicker, new TickerListFragment()).commit();
+            fg.beginTransaction().replace(R.id.bottomWebView, new WebViewFragment()).commit();
         }
 
         tickerListViewModel = new ViewModelProvider(this).get(TickerListViewModel.class);
 
-        // Check if the layout is in landscape mode
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // Load both fragments side by side
-            loadTickerListFragment();
-            loadInfoWebFragment("https://seekingalpha.com");
+        //sets up SMS permissions
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS)
+                != PackageManager.PERMISSION_GRANTED){
+            String[] perms = new String[]{android.Manifest.permission.RECEIVE_SMS};
+            ActivityCompat.requestPermissions(this,perms, 101);
+        }
+    }
+    @Override //will execute code whenever you get new intent (allow work with single task activities)
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String message = intent.getStringExtra("sms");
+
+        //SMS without the correct format
+        if(!message.contains("Ticker:<<") || !message.contains(">>")){
+            recreate();
+            Toast.makeText(this, "No valid watchlist entry was found", Toast.LENGTH_SHORT).show();
+        } else {
+            int tickerBegin = message.lastIndexOf('<');
+            int tickerEnd = message.indexOf('>');
+            String ticker = message.substring(tickerBegin + 1, tickerEnd).toUpperCase();
+            if (isValidTicker(ticker) == false){
+                recreate();
+                Toast.makeText(this, "The ticker was invalid", Toast.LENGTH_SHORT).show();
+            } else { //The ticker is valid and in the correct format
+                recreate();
+                tickerListViewModel.addTickers(ticker);
+                tickerListViewModel.setSelectedTicker(ticker);
+            }
         }
     }
 
-    private void loadTickerListFragment() {
-        // Add TickerListFragment to the container view
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new TickerListFragment())
-                .commit();
-    }
-
-    private void loadInfoWebFragment(String url) {
-        // Add InfoWebFragment to the container view and pass the URL
-        Bundle bundle = new Bundle();
-        bundle.putString("url", url);
-        InfoWebFragment infoWebFragment = new InfoWebFragment();
-        infoWebFragment.setArguments(bundle);
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, infoWebFragment)
-                .commit();
+    //takes in ticker and checks if it is valid
+    public boolean isValidTicker(String ticker){
+        for (int i = 0; i < ticker.length(); i++){
+            if((Character.isLetter(ticker.charAt(i)) == false)) return false;
+        }
+        return true;
     }
 }
