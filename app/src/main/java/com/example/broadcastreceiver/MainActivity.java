@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         fg = getSupportFragmentManager();
         if(savedInstanceState==null){
             fg.beginTransaction().replace(R.id.topTicker, new TickerListFragment()).commit();
-            fg.beginTransaction().replace(R.id.bottomWebView, new WebViewFragment()).commit();
+            fg.beginTransaction().replace(R.id.bottomWebView, new InfoWebFragment()).commit();
         }
 
         tickerListViewModel = new ViewModelProvider(this).get(TickerListViewModel.class);

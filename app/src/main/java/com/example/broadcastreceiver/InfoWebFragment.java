@@ -11,9 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
-public class WebViewFragment extends Fragment {
+public class InfoWebFragment extends Fragment {
     WebView webView;
     TickerListViewModel tickerListViewModel;
 

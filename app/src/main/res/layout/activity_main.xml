@@ -19,7 +19,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/bottomWebView"
-        android:name="com.example.broadcastreceiver.WebViewFragment"
+        android:name="com.example.broadcastreceiver.InfoWebFragment"
         android:layout_width="360dp"
         android:layout_height="415dp"
         android:layout_marginStart="2dp"
