@@ -3,56 +3,59 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TickerListFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private TickerAdapter tickerAdapter;
-    private List<String> tickerList;
+    ListView listview;
+    ArrayAdapter<String> adapter;
+    TickerListViewModel tickerListViewModel;
 
-    public TickerListFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        tickerList = new ArrayList<>();
-        // Initialize with default entries
-        tickerList.add("BAC");
-        tickerList.add("AAPL");
-        tickerList.add("DIS");
-    }
+    AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            String ticker = (String) adapterView.getItemAtPosition(i);
+            tickerListViewModel.setSelectedTicker(ticker); // sets the selected ticker
+        }
+    };
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_ticker_list, container, false);
-
-        recyclerView = v.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        tickerAdapter = new TickerAdapter(tickerList);
-        recyclerView.setAdapter(tickerAdapter);
-
-        // Handle item clicks in the RecyclerView
-        tickerAdapter.setOnItemClickListener(new TickerAdapter.OnItemClickListener() {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        tickerListViewModel = new ViewModelProvider(getActivity()).get(TickerListViewModel.class);
+        //observes changes in the listview
+        Observer<LinkedList<String>> observer = new Observer<LinkedList<String>>() {
             @Override
-            public void onItemClick(String tickerSymbol) {
-                // Replace the InfoWebFragment with the selected ticker's URL
-                ((MainActivity) requireActivity()).loadInfoWebFragment(generateSeekingAlphaURL(tickerSymbol));
+            public void onChanged(LinkedList<String> strings) {
+                LinkedList<String> tickers = tickerListViewModel.getTickers().getValue();
+                adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, tickers);
+                listview.setAdapter(adapter);
+                listview.setOnItemClickListener(clickListener);
+                adapter.notifyDataSetChanged();
             }
-        });
+        };
 
-        return v;
+        tickerListViewModel.getTickers().observe(getViewLifecycleOwner(),observer);
     }
 
-    private String generateSeekingAlphaURL(String tickerSymbol) {
-
-        return "https://seekingalpha.com/symbol/" + tickerSymbol;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_ticker_list, container, false);
+        listview = view.findViewById(R.id.listview_id);
+        return view;
     }
+
+
 }
