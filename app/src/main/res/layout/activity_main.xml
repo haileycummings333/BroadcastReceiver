@@ -10,19 +10,18 @@
 
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/webFragment"
+        android:id="@+id/listFragment"
         android:name="com.example.broadcastreceiver.TickerListFragment"
-        android:layout_width="442dp"
-        android:layout_height="412dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="305dp"
+        android:layout_height="411dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/listFragment"
+        android:id="@+id/webFragment"
         android:name="com.example.broadcastreceiver.InfoWebFragment"
-        android:layout_width="286dp"
-        android:layout_height="411dp"
-        android:layout_marginStart="2dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="427dp"
+        android:layout_height="412dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

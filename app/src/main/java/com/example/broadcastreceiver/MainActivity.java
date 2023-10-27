@@ -21,16 +21,17 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String message = intent.getStringExtra("SMS");
-
+        //initializes the tl view model
+        tickerListViewModel = new ViewModelProvider(this).get(TickerListViewModel.class);
         fg = getSupportFragmentManager();
+
+        //if there's no saved state, replaces fragments within the current activitys layout
         if(savedInstanceState==null){
-            fg.beginTransaction().replace(R.id.webFragment, new TickerListFragment()).commit();
-            fg.beginTransaction().replace(R.id.listFragment, new InfoWebFragment()).commit();
+            fg.beginTransaction().replace(R.id.listFragment, new TickerListFragment()).commit();
+            fg.beginTransaction().replace(R.id.webFragment, new InfoWebFragment()).commit();
         }
 
-        tickerListViewModel = new ViewModelProvider(this).get(TickerListViewModel.class);
-
-        //check for permissions
+        //check for permissions, will request if not granted yet
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS)
                 != PackageManager.PERMISSION_GRANTED){
             String[] permissions = new String[]{android.Manifest.permission.RECEIVE_SMS};
@@ -40,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        //retrieves the message from the intent
         String message = intent.getStringExtra("sms");
 
+        //checks format and validity of the ticker from sms message
         if(!message.contains("Ticker:<<") || !message.contains(">>")){ //invalid format
             recreate();
             Toast.makeText(this, "Not a valid entry", Toast.LENGTH_SHORT).show();
