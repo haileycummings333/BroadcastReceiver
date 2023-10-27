@@ -19,12 +19,13 @@ public class InfoWebFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //inflate view
         View view = inflater.inflate(R.layout.fragment_web_view, container, false);
         webView = view.findViewById(R.id.webView);
         return view;
     }
 
-    //loads the webview with the url
+    //method to load url
     public void loadUrl(String url){
         webView.loadUrl(url);
     }
@@ -35,20 +36,24 @@ public class InfoWebFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         tickerListViewModel = new ViewModelProvider(getActivity()).get(TickerListViewModel.class);
         webView.getSettings().setJavaScriptEnabled(true);
+        //load the url onto the screen
         loadUrl("https://seekingalpha.com/");
 
-        //loads the url based on the selected ticker
+
         Observer<String> observer = new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 if (s != null){
+                    //constructs url with string from observer
                     String url = "https://seekingalpha.com/symbol/" + s;
                     loadUrl(url);
                 } else {
+                    //loads default url
                     loadUrl("https://seekingalpha.com/");
                 }
             }
         };
+        //when selected ticker changes the appropriate url get loaded
         tickerListViewModel.getSelectedTicker().observe(getViewLifecycleOwner(),observer);
 
     }

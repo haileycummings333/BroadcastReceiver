@@ -24,17 +24,17 @@ public class MainActivity extends AppCompatActivity {
 
         fg = getSupportFragmentManager();
         if(savedInstanceState==null){
-            fg.beginTransaction().replace(R.id.topTicker, new TickerListFragment()).commit();
-            fg.beginTransaction().replace(R.id.bottomWebView, new InfoWebFragment()).commit();
+            fg.beginTransaction().replace(R.id.webFragment, new TickerListFragment()).commit();
+            fg.beginTransaction().replace(R.id.listFragment, new InfoWebFragment()).commit();
         }
 
         tickerListViewModel = new ViewModelProvider(this).get(TickerListViewModel.class);
 
-
+        //check for permissions
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS)
                 != PackageManager.PERMISSION_GRANTED){
-            String[] perms = new String[]{android.Manifest.permission.RECEIVE_SMS};
-            ActivityCompat.requestPermissions(this,perms, 101);
+            String[] permissions = new String[]{android.Manifest.permission.RECEIVE_SMS};
+            ActivityCompat.requestPermissions(this,permissions, 101);
         }
     }
     @Override
@@ -42,29 +42,28 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         String message = intent.getStringExtra("sms");
 
-        //SMS without the correct format
-        if(!message.contains("Ticker:<<") || !message.contains(">>")){
+        if(!message.contains("Ticker:<<") || !message.contains(">>")){ //invalid format
             recreate();
-            Toast.makeText(this, "No valid watchlist entry was found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Not a valid entry", Toast.LENGTH_SHORT).show();
         } else {
             int tickerBegin = message.lastIndexOf('<');
             int tickerEnd = message.indexOf('>');
             String ticker = message.substring(tickerBegin + 1, tickerEnd).toUpperCase();
-            if (isValidTicker(ticker) == false){
+            if (isValidTicker(ticker) == false){ //invalid ticker
                 recreate();
                 Toast.makeText(this, "The ticker was invalid", Toast.LENGTH_SHORT).show();
-            } else { //The ticker is valid and in the correct format
+            } else { //the ticker is valid and in the correct format
                 recreate();
                 tickerListViewModel.addTickers(ticker);
                 tickerListViewModel.setSelectedTicker(ticker);
             }
         }
     }
-
-
+    //checks if ticker is valid
     public boolean isValidTicker(String ticker){
         for (int i = 0; i < ticker.length(); i++){
-            if((Character.isLetter(ticker.charAt(i)) == false)) return false;
+            if((!Character.isLetter(ticker.charAt(i))))
+                return false;
         }
         return true;
     }

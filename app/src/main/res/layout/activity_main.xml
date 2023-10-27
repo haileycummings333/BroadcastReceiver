@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/display"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -9,19 +10,18 @@
 
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/topTicker"
+        android:id="@+id/webFragment"
         android:name="com.example.broadcastreceiver.TickerListFragment"
-        android:layout_width="355dp"
-        android:layout_height="410dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="442dp"
+        android:layout_height="412dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/bottomWebView"
+        android:id="@+id/listFragment"
         android:name="com.example.broadcastreceiver.InfoWebFragment"
-        android:layout_width="360dp"
-        android:layout_height="415dp"
+        android:layout_width="286dp"
+        android:layout_height="411dp"
         android:layout_marginStart="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

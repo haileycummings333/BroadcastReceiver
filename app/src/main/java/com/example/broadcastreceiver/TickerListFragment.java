@@ -18,24 +18,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TickerListFragment extends Fragment {
-
     ListView listview;
     ArrayAdapter<String> adapter;
     TickerListViewModel tickerListViewModel;
 
+    //sets action to respond when an item on the list is clicked
     AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             String ticker = (String) adapterView.getItemAtPosition(i);
-            tickerListViewModel.setSelectedTicker(ticker); // sets the selected ticker
+            //sets selected item on list as the selected ticker
+            tickerListViewModel.setSelectedTicker(ticker);
         }
     };
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //initializes the ticker view model
         tickerListViewModel = new ViewModelProvider(getActivity()).get(TickerListViewModel.class);
 
+        //sets up the observer to watch for changes in the list of tickers
         Observer<LinkedList<String>> observer = new Observer<LinkedList<String>>() {
             @Override
             public void onChanged(LinkedList<String> strings) {
@@ -46,7 +50,6 @@ public class TickerListFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         };
-
         tickerListViewModel.getTickers().observe(getViewLifecycleOwner(),observer);
     }
 
@@ -56,6 +59,4 @@ public class TickerListFragment extends Fragment {
         listview = view.findViewById(R.id.listView);
         return view;
     }
-
-
 }
